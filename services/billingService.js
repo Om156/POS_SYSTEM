@@ -54,7 +54,35 @@ const getBillById = async (id) => {
   return bill;
 };
 
+const getAllBills = async () => {
+  return await Billing.find().populate('orderId');
+};
+
+const updateBill = async (id, updateData) => {
+  const bill = await Billing.findByIdAndUpdate(id, updateData, {
+    new: true,
+    runValidators: true,
+  });
+
+  if (!bill) {
+    throw new AppError('No bill found with that ID', 404);
+  }
+  return bill;
+};
+
+const deleteBill = async (id) => {
+  const bill = await Billing.findByIdAndDelete(id);
+  
+  if (!bill) {
+    throw new AppError('No bill found with that ID', 404);
+  }
+  return bill;
+};
+
 module.exports = {
   generateBill,
   getBillById,
+  getAllBills,
+  updateBill,
+  deleteBill,
 };

@@ -19,15 +19,12 @@ const updateMenuSchema = Joi.object({
   available: Joi.boolean(),
 }).min(1);
 
-router
-  .route('/')
-  .get(menuController.getAllMenuItems)
-  .post(validate(menuSchema), menuController.createMenuItem);
+// Explicit GET, POST, PUT, DELETE endpoints for simplicity
+router.get('/', menuController.getAllMenuItems);
+router.post('/', validate(menuSchema), menuController.createMenuItem);
 
-router
-  .route('/:id')
-  .get(menuController.getMenuItem)
-  .put(validate(updateMenuSchema), menuController.updateMenuItem)
-  .delete(menuController.deleteMenuItem);
+router.get('/:id', menuController.getMenuItem);
+router.put('/:id', validate(updateMenuSchema), menuController.updateMenuItem);
+router.delete('/:id', menuController.deleteMenuItem);
 
 module.exports = router;

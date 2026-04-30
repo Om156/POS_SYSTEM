@@ -92,9 +92,55 @@ const updateOrderStatus = async (id, status) => {
   return order;
 };
 
+const updateOrder = async (id, updateData) => {
+  // If items are being updated, we would need to recalculate totalAmount
+  // For simplicity, we just allow updating the type or other non-item fields here
+  // A complete update with item recalculation would be more complex
+  if (updateData.items) {
+    let totalAmount = 0;
+    const processedItems = [];
+
+    for (const item of updateData.items) {
+      const menuItem = await Menu.findById(item.itemId);
+      if (!menuItem) {
+        throw new AppError(`Menu item with id ${item.itemId} not found`, 404);
+      }
+      const itemTotal = menuItem.price * item.quantity;
+      totalAmount += itemTotal;
+      processedItems.push({
+        itemId: item.itemId,
+        quantity: item.quantity,
+        price: menuItem.price,
+      });
+    }
+    updateData.items = processedItems;
+    updateData.totalAmount = totalAmount;
+  }
+
+  const order = await Order.findByIdAndUpdate(id, updateData, {
+    new: true,
+    runValidators: true,
+  });
+
+  if (!order) {
+    throw new AppError('No order found with that ID', 404);
+  }
+  return order;
+};
+
+const deleteOrder = async (id) => {
+  const order = await Order.findByIdAndDelete(id);
+  if (!order) {
+    throw new AppError('No order found with that ID', 404);
+  }
+  return order;
+};
+
 module.exports = {
   createOrder,
   getOrders,
   getOrderById,
   updateOrderStatus,
+  updateOrder,
+  deleteOrder,
 };

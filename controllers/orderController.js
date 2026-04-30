@@ -23,9 +23,21 @@ const updateOrderStatus = catchAsync(async (req, res, next) => {
   apiResponse(res, 200, 'Order status updated successfully', { order: updatedOrder });
 });
 
+const updateOrder = catchAsync(async (req, res, next) => {
+  const updatedOrder = await orderService.updateOrder(req.params.id, req.body);
+  apiResponse(res, 200, 'Order updated successfully', { order: updatedOrder });
+});
+
+const deleteOrder = catchAsync(async (req, res, next) => {
+  await orderService.deleteOrder(req.params.id);
+  apiResponse(res, 204, 'Order deleted successfully');
+});
+
 module.exports = {
   createOrder,
   getOrders,
   getOrder,
   updateOrderStatus,
+  updateOrder,
+  deleteOrder,
 };

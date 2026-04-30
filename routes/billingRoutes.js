@@ -11,7 +11,17 @@ const generateBillSchema = Joi.object({
   taxPercent: Joi.number().min(0).default(0),
 });
 
+const updateBillSchema = Joi.object({
+  paymentMethod: Joi.string().valid(...Object.values(PAYMENT_METHOD)),
+  taxPercent: Joi.number().min(0),
+}).min(1);
+
+// Explicit GET, POST, PUT, DELETE endpoints
+router.get('/', billingController.getAllBills);
 router.post('/:orderId', validate(generateBillSchema), billingController.generateBill);
+
 router.get('/:id', billingController.getBill);
+router.put('/:id', validate(updateBillSchema), billingController.updateBill);
+router.delete('/:id', billingController.deleteBill);
 
 module.exports = router;

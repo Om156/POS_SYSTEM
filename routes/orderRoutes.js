@@ -20,15 +20,20 @@ const updateOrderStatusSchema = Joi.object({
   status: Joi.string().valid(...Object.values(ORDER_STATUS)).required(),
 });
 
-router
-  .route('/')
-  .get(orderController.getOrders)
-  .post(validate(createOrderSchema), orderController.createOrder);
+const updateOrderSchema = Joi.object({
+  items: Joi.array().items(orderItemSchema).min(1),
+  type: Joi.string().valid(...Object.values(ORDER_TYPE)),
+}).min(1);
 
-router.route('/:id').get(orderController.getOrder);
+// Explicit GET, POST, PUT, DELETE endpoints for simple and clear routing
+router.get('/', orderController.getOrders);
+router.post('/', validate(createOrderSchema), orderController.createOrder);
 
-router
-  .route('/:id/status')
-  .put(validate(updateOrderStatusSchema), orderController.updateOrderStatus);
+router.get('/:id', orderController.getOrder);
+router.put('/:id', validate(updateOrderSchema), orderController.updateOrder);
+router.delete('/:id', orderController.deleteOrder);
+
+// Specific endpoint for status updates
+router.put('/:id/status', validate(updateOrderStatusSchema), orderController.updateOrderStatus);
 
 module.exports = router;

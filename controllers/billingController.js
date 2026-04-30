@@ -12,7 +12,25 @@ const getBill = catchAsync(async (req, res, next) => {
   apiResponse(res, 200, 'Bill retrieved successfully', { bill });
 });
 
+const getAllBills = catchAsync(async (req, res, next) => {
+  const bills = await billingService.getAllBills();
+  apiResponse(res, 200, 'Bills retrieved successfully', { bills });
+});
+
+const updateBill = catchAsync(async (req, res, next) => {
+  const updatedBill = await billingService.updateBill(req.params.id, req.body);
+  apiResponse(res, 200, 'Bill updated successfully', { bill: updatedBill });
+});
+
+const deleteBill = catchAsync(async (req, res, next) => {
+  await billingService.deleteBill(req.params.id);
+  apiResponse(res, 204, 'Bill deleted successfully');
+});
+
 module.exports = {
   generateBill,
   getBill,
+  getAllBills,
+  updateBill,
+  deleteBill,
 };
